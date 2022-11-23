@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cognizant.dto.CustomerDto;
 import com.cognizant.model.Customer;
+import com.cognizant.model.CustomerCreationStatus;
 import com.cognizant.service.CustomerService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,8 +46,9 @@ public class CustomerController {
 
 	@Operation(summary = "Used to create a new customer and associated customer account.")
 	@PostMapping("/createCustomer")
-	public ResponseEntity<?> createCustomer(@Parameter(description = "Customer object to be saved") @Valid @RequestBody CustomerDto customer, BindingResult bindingResult)
-			throws DateTimeException, BindException {
+	public CustomerCreationStatus createCustomer(
+			@Parameter(description = "Customer object to be saved") @Valid @RequestBody CustomerDto customer,
+			BindingResult bindingResult) throws DateTimeException, BindException {
 		log.info("Inside the createCustomer EndPoint : Begin");
 
 		if (bindingResult.hasErrors()) {
@@ -54,25 +56,19 @@ public class CustomerController {
 		}
 		Customer newCustomer = customer.getCustomerFromDto();
 		customerService.createCustomer(newCustomer);
-		if (newCustomer != null) {
-			log.info("Inside the createCustomer EndPoint : End");
-			return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>("Customer Creation UNSUCCESSFUL", HttpStatus.NOT_ACCEPTABLE);
-		}
+
+		log.info("Inside the createCustomer EndPoint : End");
+		return new CustomerCreationStatus("Customer Creation SUCCESSFUL", newCustomer.getCustomerid());
 	}
 
 	@Operation(summary = "Used to retrieve customer details including a list of customer accounts.")
-	@GetMapping("/getCustomerDetails/{id}")
-	public ResponseEntity<?> getCustomerDetails(@Parameter(description = "id of customer to be searched") @PathVariable String id) {
+	@GetMapping("/getCustomerDetails/{customerId}")
+	public Customer getCustomerDetails(
+			@Parameter(description = "id of customer to be searched") @PathVariable("customerId") String customerId) {
 		log.info("Inside the getCustomerDetails EndPoint : Begin");
-		Customer customerWithDetails = customerService.getCustomerDetails(id);
-		if (customerWithDetails == null) {
-			return new ResponseEntity<>("Customer with User id " + id + " does not exist", HttpStatus.NOT_ACCEPTABLE);
-		}
-		customerWithDetails.setPassword(null);
+		Customer customerWithDetails = customerService.getCustomerDetails(customerId);
 		log.info("Inside the getCustomerDetails EndPoint : End");
-		return new ResponseEntity<>(customerWithDetails, HttpStatus.OK);
+		return customerWithDetails;
 	}
 
 }

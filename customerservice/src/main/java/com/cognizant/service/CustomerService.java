@@ -9,5 +9,9 @@ public interface CustomerService {
 	Customer createCustomer(@Valid Customer customer);
 
 	Customer getCustomerDetails(String id);
+	
+	Customer updateCustomer(@Valid Customer customer);
+	
+	boolean deleteCustomer(String id);
 
 }

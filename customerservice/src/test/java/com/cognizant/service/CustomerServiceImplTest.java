@@ -50,9 +50,6 @@ class CustomerServiceImplTest {
 	@Mock
 	CustomerRepository customerRepository;
 
-	@InjectMocks
-	CustomerServiceImpl customerServiceImpl;
-
 	Customer newCustomer;
 	Customer returnedCustomer;
 	AccountDto account;

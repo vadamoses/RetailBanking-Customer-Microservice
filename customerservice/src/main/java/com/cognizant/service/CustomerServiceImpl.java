@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public Customer createCustomer(@Valid Customer customer) {
 		/*
-		 * check if account already exists,then interact with the Account Service to
+		 * check if customer already exists,then interact with the Account Service to
 		 * create the customer’s account
 		 */
 		Customer existingCustomerDetails = getCustomerDetails(customer.getCustomerid());

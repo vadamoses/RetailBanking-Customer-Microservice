@@ -15,9 +15,9 @@ import io.swagger.v3.oas.annotations.info.Info;
 @EnableEurekaClient
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(title = "Customer Service", version = "1.0", description = "This service is used to create a new customer, as well as retrieve a customer's account details."))
-public class CustomerserviceApplication {
+public class CustomerServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CustomerserviceApplication.class, args);
+		SpringApplication.run(CustomerServiceApplication.class, args);
 	}
 }

@@ -9,15 +9,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.cognizant.dto.AccountDto;
+import com.cognizant.dto.UserDto;
 import com.cognizant.model.AccountCreationStatus;
 
 //@FeignClient(name = "${feign.name-account-service}", url = "${feign.url-account-service}")
 public interface AccountServiceClient {
 
-	@GetMapping("/api/v1/account/customer/{id}")
-	public List<AccountDto> getCustomerAccounts(@PathVariable(value = "id") String id);
+	@GetMapping("/api/v1/account/customer/{customerId}")
+	public List<UserDto> getCustomerAccounts(@PathVariable(value = "customerId") String customerId);
 
 	@PostMapping("/api/v1/account")
 	public AccountCreationStatus createAccount(@RequestBody AccountDto account,
-			@PathVariable(value = "id") String customerId);
+			@PathVariable(value = "customerId") String customerId);
 }

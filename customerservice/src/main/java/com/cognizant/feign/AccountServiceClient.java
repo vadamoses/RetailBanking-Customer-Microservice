@@ -17,11 +17,11 @@ import com.cognizant.model.AccountCreationStatus;
 @FeignClient(name = "${feign.name-account-service}", url = "${feign.url-account-service}")
 public interface AccountServiceClient {
 
-	@GetMapping("account-service/getAccounts/{customerId}")
+	@GetMapping("account/getAccounts/{customerId}")
 	public List<AccountDto> getCustomerAccount(@RequestHeader("Authorization") String token,
 			@PathVariable long customerId);
 
-	@PostMapping("account-service/createAccount/{customerId}")
+	@PostMapping("account/createAccount/{customerId}")
 	public AccountCreationStatus createAccount(@RequestHeader("Authorization") String token,
 			@PathVariable long customerId, @Valid @RequestBody AccountDto account);
 }

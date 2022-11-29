@@ -2,11 +2,14 @@ package com.cognizant.feign;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.cognizant.dto.AccountDto;
 import com.cognizant.model.AccountCreationStatus;
@@ -14,10 +17,11 @@ import com.cognizant.model.AccountCreationStatus;
 @FeignClient(name = "${feign.name-account-service}", url = "${feign.url-account-service}")
 public interface AccountServiceClient {
 
-	@GetMapping("/api/v1/account/customer/{customerId}")
-	public List<AccountDto> getCustomerAccounts(@PathVariable(value = "customerId") String customerId);
+	@GetMapping("account-service/getAccounts/{customerId}")
+	public List<AccountDto> getCustomerAccount(@RequestHeader("Authorization") String token,
+			@PathVariable long customerId);
 
-	@PostMapping("/api/v1/account")
-	public AccountCreationStatus createAccount(@RequestBody AccountDto account,
-			@PathVariable(value = "customerId") String customerId);
+	@PostMapping("account-service/createAccount/{customerId}")
+	public AccountCreationStatus createAccount(@RequestHeader("Authorization") String token,
+			@PathVariable long customerId, @Valid @RequestBody AccountDto account);
 }

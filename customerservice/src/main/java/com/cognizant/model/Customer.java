@@ -1,7 +1,7 @@
 package com.cognizant.model;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -12,7 +12,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 
 import com.cognizant.dto.AccountDto;
-import com.cognizant.dto.CustomerDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class Customer {
 	@Id
 	@Column(name = "customerid", length = 30, unique = true)
-	private String customerid;
+	private Long customerid;
 
 	@Column(name = "username", length = 30)
 	@NotBlank

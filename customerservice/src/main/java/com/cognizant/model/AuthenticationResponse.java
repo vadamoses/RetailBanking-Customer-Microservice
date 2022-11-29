@@ -1,13 +1,11 @@
 package com.cognizant.model;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class AuthenticationResponse {
 	private String userid;
 	private String name;

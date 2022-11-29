@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cognizant.dto.AccountDto;
-import com.cognizant.dto.CustomerDto;
+import com.cognizant.exceptions.AccessDeniedException;
 import com.cognizant.feign.AccountServiceClient;
 import com.cognizant.feign.AuthenticationServiceClient;
+import com.cognizant.model.AuthenticationResponse;
 import com.cognizant.model.Customer;
+import com.cognizant.model.CustomerCreationStatus;
 import com.cognizant.repository.CustomerRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,28 +33,40 @@ public class CustomerServiceImpl implements CustomerService {
 	AuthenticationServiceClient authenticationServiceClient;
 
 	@Override
-	public Customer createCustomer(@Valid Customer customer) {
+	public CustomerCreationStatus createCustomer(String token, @Valid Customer customer) {
 		/*
 		 * check if customer already exists,then interact with the Account Service to
 		 * create the customer’s account
 		 */
-		Customer existingCustomerDetails = getCustomerDetails(customer.getCustomerid());
+		Customer existingCustomerDetails = getCustomerDetails(token, customer.getCustomerid());
 
 		if (existingCustomerDetails == null) {
 			/* create new user of type customer with the authentication service */
 		}
 
 		for (AccountDto account : customer.getCustomerAccounts()) {
-			accountServiceClient.createAccount(account, customer.getCustomerid());
+			accountServiceClient.createAccount(token, customer.getCustomerid(), account);
 		}
 
 		customerRepository.save(customer);
+		CustomerCreationStatus customerCreationStatus = new CustomerCreationStatus(customer.getCustomerid(),
+				"Sucessfully Created");
 		log.info("New Customer Added.");
-		return customer;
+		return customerCreationStatus;
 	}
 
 	@Override
-	public Customer getCustomerDetails(String id) {
+	public Customer getCustomer(Long id) {
+		Optional<Customer> customerOptional = customerRepository.findById(id);
+
+		if (!customerOptional.isPresent()) {
+			return null;
+		}
+		return customerOptional.get();
+	}
+
+	@Override
+	public Customer getCustomerDetails(String token, Long id) {
 		Optional<Customer> customerOptional = customerRepository.findById(id);
 
 		/* Check if optional is returning empty value before invoking .get() */
@@ -61,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 		/* get list of accounts from accounts service */
 
-		List<AccountDto> customerAccounts = accountServiceClient.getCustomerAccounts(id);
+		List<AccountDto> customerAccounts = accountServiceClient.getCustomerAccount(token, id);
 		Customer customerWithDetails = customerOptional.get();
 
 		/* add returned list of accounts to customer */
@@ -87,7 +101,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public boolean deleteCustomer(String id) {
+	public boolean deleteCustomer(Long id) {
 		Optional<Customer> customerOptional = customerRepository.findById(id);
 		if (!customerOptional.isPresent()) {
 			return false;
@@ -96,6 +110,29 @@ public class CustomerServiceImpl implements CustomerService {
 		customerRepository.deleteById(id);
 		log.info("Customer deleted.");
 		return true;
+	}
+
+	@Override
+	public AuthenticationResponse hasPermission(String token) {
+		return authenticationServiceClient.tokenValidation(token);
+	}
+
+	@Override
+	public AuthenticationResponse hasEmployeePermission(String token) {
+		AuthenticationResponse tokenValidity = authenticationServiceClient.tokenValidation(token);
+		if (!authenticationServiceClient.getRole(tokenValidity.getUserid()).equalsIgnoreCase("EMPLOYEE")) {
+			throw new AccessDeniedException("NOT ALLOWED");
+		}
+		return tokenValidity;
+	}
+
+	@Override
+	public AuthenticationResponse hasCustomerPermission(String token) {
+		AuthenticationResponse tokenValidity = authenticationServiceClient.tokenValidation(token);
+		if (!authenticationServiceClient.getRole(tokenValidity.getUserid()).equalsIgnoreCase("CUSTOMER")) {
+			throw new AccessDeniedException("NOT ALLOWED");
+		}
+		return tokenValidity;
 	}
 
 }

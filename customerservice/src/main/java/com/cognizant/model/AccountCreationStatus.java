@@ -1,5 +1,7 @@
 package com.cognizant.model;
 
+import javax.persistence.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class AccountCreationStatus {
 
-	private String message;
+	@Id
 	private String accountid;
+	private String message;
 }

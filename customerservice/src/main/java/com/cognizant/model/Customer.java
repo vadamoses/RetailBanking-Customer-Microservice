@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 
 import com.cognizant.dto.AccountDto;
+import com.cognizant.dto.CustomerDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;

@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cognizant.dto.AccountDto;
+import com.cognizant.dto.CustomerDto;
 import com.cognizant.feign.AccountServiceClient;
+import com.cognizant.feign.AuthenticationServiceClient;
 import com.cognizant.model.Customer;
 import com.cognizant.repository.CustomerRepository;
 
@@ -22,9 +24,11 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	CustomerRepository customerRepository;
 
-	/*
-	 * @Autowired AccountServiceClient accountServiceClient;
-	 */
+	@Autowired
+	AccountServiceClient accountServiceClient;
+
+	@Autowired
+	AuthenticationServiceClient authenticationServiceClient;
 
 	@Override
 	public Customer createCustomer(@Valid Customer customer) {
@@ -39,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 
 		for (AccountDto account : customer.getCustomerAccounts()) {
-			//accountServiceClient.createAccount(account, customer.getCustomerid());
+			accountServiceClient.createAccount(account, customer.getCustomerid());
 		}
 
 		customerRepository.save(customer);
@@ -56,15 +60,15 @@ public class CustomerServiceImpl implements CustomerService {
 			return null;
 		}
 		/* get list of accounts from accounts service */
-		//List<AccountDto> customerAccounts = accountServiceClient.getCustomerAccounts(id);
-		//Customer customerWithDetails = customerOptional.get();
+
+		List<AccountDto> customerAccounts = accountServiceClient.getCustomerAccounts(id);
+		Customer customerWithDetails = customerOptional.get();
 
 		/* add returned list of accounts to customer */
-		//customerWithDetails.setCustomerAccounts(customerAccounts);
+		customerWithDetails.setCustomerAccounts(customerAccounts);
 
 		log.info("Customer Details Retrieved.");
-		return customerOptional.get();
-		//return customerWithDetails;
+		return customerWithDetails;
 	}
 
 	@Override
